@@ -11,16 +11,51 @@ import {
   StatusBar,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useLoading} from '../context/LoadingContext';
+import {useToast} from '../context/ToastContext';
 
 const PRIMARY_COLOR = '#3B5998';
 
-const LoginScreen = () => {
+interface LoginScreenProps {
+  onLoginSuccess: () => void;
+}
+
+const LoginScreen: React.FC<LoginScreenProps> = ({onLoginSuccess}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const {showLoading, hideLoading} = useLoading();
+  const {showError, showSuccess} = useToast();
 
-  const handleLogin = () => {
-    // TODO: Implement login logic
-    console.log('Login pressed', { email, password });
+  const handleLogin = async () => {
+    if (!email.trim() || !password.trim()) {
+      showError('Vui lòng nhập email và mật khẩu');
+      return;
+    }
+
+    // Simple demo authentication
+    if (email === 'admin@example.com' && password === 'password') {
+      showLoading('Đang đăng nhập...');
+      try {
+        // Simulate network delay
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        await AsyncStorage.setItem('isLoggedIn', 'true');
+        await AsyncStorage.setItem('username', 'Admin User');
+        hideLoading();
+        showSuccess('Đăng nhập thành công!');
+
+        // Delay to show success toast
+        setTimeout(() => {
+          onLoginSuccess();
+        }, 500);
+      } catch (error) {
+        hideLoading();
+        showError('Không thể lưu thông tin đăng nhập');
+      }
+    } else {
+      showError('Email hoặc mật khẩu không đúng. Demo: admin@example.com / password');
+    }
   };
 
   const handleForgotPassword = () => {
