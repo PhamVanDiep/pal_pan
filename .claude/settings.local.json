@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(bundle exec pod install:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(npm install:*)",
+      "Bash(pod install)"
     ],
     "deny": [],
     "ask": []

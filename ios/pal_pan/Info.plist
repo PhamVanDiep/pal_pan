@@ -38,6 +38,8 @@
 	<string></string>
 	<key>NSUserNotificationsUsageDescription</key>
 	<string>Ứng dụng cần quyền gửi thông báo để nhắc nhở bạn về công việc</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Ứng dụng cần quyền sử dụng Face ID để xác thực đăng nhập</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>

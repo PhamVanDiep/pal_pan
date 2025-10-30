@@ -14,6 +14,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useLoading} from '../context/LoadingContext';
 import {useToast} from '../context/ToastContext';
+import BiometricLogin from '../components/BiometricLogin';
 
 const PRIMARY_COLOR = '#3B5998';
 
@@ -66,6 +67,27 @@ const LoginScreen: React.FC<LoginScreenProps> = ({onLoginSuccess}) => {
   const handleSignUp = () => {
     // TODO: Implement sign up navigation
     console.log('Sign up pressed');
+  };
+
+  const handleBiometricSuccess = async () => {
+    showLoading('Đang đăng nhập...');
+    try {
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      await AsyncStorage.setItem('isLoggedIn', 'true');
+      await AsyncStorage.setItem('username', 'Admin User');
+      hideLoading();
+      showSuccess('Đăng nhập thành công bằng sinh trắc học!');
+
+      // Delay to show success toast
+      setTimeout(() => {
+        onLoginSuccess();
+      }, 500);
+    } catch (error) {
+      hideLoading();
+      showError('Không thể lưu thông tin đăng nhập');
+    }
   };
 
   return (
@@ -126,6 +148,11 @@ const LoginScreen: React.FC<LoginScreenProps> = ({onLoginSuccess}) => {
               <Text style={styles.dividerText}>OR</Text>
               <View style={styles.dividerLine} />
             </View>
+
+            <BiometricLogin
+              onSuccess={handleBiometricSuccess}
+              onError={(error) => showError(error)}
+            />
 
             <View style={styles.signUpContainer}>
               <Text style={styles.signUpText}>Don't have an account? </Text>
