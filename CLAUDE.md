@@ -8,15 +8,23 @@ This is a React Native 0.82.0 mobile application named `pal_pan`, bootstrapped w
 
 ## Development Commands
 
+### Package Management
+```bash
+yarn install           # Install dependencies
+yarn add <package>     # Add new dependency
+yarn add -D <package>  # Add new dev dependency
+yarn remove <package>  # Remove dependency
+```
+
 ### Metro Bundler
 ```bash
-npm start              # Start Metro bundler
+yarn start             # Start Metro bundler
 ```
 
 ### Running the App
 ```bash
-npm run android        # Run on Android emulator/device
-npm run ios            # Run on iOS simulator/device
+yarn android           # Run on Android emulator/device
+yarn ios               # Run on iOS simulator/device
 ```
 
 ### iOS-Specific Setup
@@ -32,8 +40,8 @@ Run `bundle exec pod install` after:
 
 ### Quality Checks
 ```bash
-npm run lint           # Run ESLint
-npm test               # Run Jest tests
+yarn lint              # Run ESLint
+yarn test              # Run Jest tests
 ```
 
 ## Architecture

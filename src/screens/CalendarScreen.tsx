@@ -474,11 +474,7 @@ const CalendarScreen = () => {
             <View style={styles.infoCard}>
               <Text style={styles.infoLabel}>Ngày Âm Lịch</Text>
               <Text style={styles.infoValue}>
-                {selectedLunar.dayInChinese} tháng{' '}
-                {selectedLunar.monthInChinese}
-              </Text>
-              <Text style={styles.infoSubValue}>
-                Ngày {selectedLunar.day}/{selectedLunar.month}/{selectedLunar.year}
+                {selectedLunar.day}/{selectedLunar.month}/{selectedLunar.year}
               </Text>
             </View>
           )}

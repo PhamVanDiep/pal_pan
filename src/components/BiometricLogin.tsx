@@ -6,8 +6,10 @@ import {
   StyleSheet,
   Alert,
   ActivityIndicator,
+  Platform,
 } from 'react-native';
 import BiometricAuthService from '../services/BiometricAuth';
+import { BiometryTypes } from 'react-native-biometrics';
 
 interface BiometricLoginProps {
   onSuccess?: () => void;
@@ -20,6 +22,7 @@ const BiometricLogin: React.FC<BiometricLoginProps> = ({
 }) => {
   const [isAvailable, setIsAvailable] = useState(false);
   const [biometricType, setBiometricType] = useState<string>('');
+  const [biometryTypeEnum, setBiometryTypeEnum] = useState<BiometryTypes | undefined>();
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
@@ -36,12 +39,32 @@ const BiometricLogin: React.FC<BiometricLoginProps> = ({
       if (capabilities.available) {
         const typeName = await BiometricAuthService.getBiometricTypeName();
         setBiometricType(typeName);
+        setBiometryTypeEnum(capabilities.biometryType);
       }
     } catch (error) {
       console.error('Error checking biometric availability:', error);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const getBiometricIcon = () => {
+    // For iOS: Show face icon for FaceID, fingerprint for TouchID
+    if (Platform.OS === 'ios') {
+      if (biometryTypeEnum === BiometryTypes.FaceID) {
+        return '👤'; // Face icon for iOS FaceID
+      } else if (biometryTypeEnum === BiometryTypes.TouchID) {
+        return '👆'; // Fingerprint icon for iOS TouchID
+      }
+    }
+
+    // For Android: Always show fingerprint icon
+    if (Platform.OS === 'android') {
+      return '👆'; // Fingerprint icon for Android
+    }
+
+    // Fallback
+    return '🔐';
   };
 
   const handleBiometricAuth = async () => {
@@ -106,7 +129,7 @@ const BiometricLogin: React.FC<BiometricLoginProps> = ({
           <ActivityIndicator size="small" color="#FFFFFF" />
         ) : (
           <>
-            <Text style={styles.buttonIcon}>🔐</Text>
+            <Text style={styles.buttonIcon}>{getBiometricIcon()}</Text>
             <Text style={styles.buttonText}>
               Đăng nhập bằng {biometricType}
             </Text>

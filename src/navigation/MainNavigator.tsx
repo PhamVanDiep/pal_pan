@@ -4,7 +4,8 @@ import {Platform} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import HomeScreen from '../screens/HomeScreen';
 import CalendarScreen from '../screens/CalendarScreen';
-import SettingsScreen from '../screens/SettingsScreen';
+import SettingsStackNavigator from './SettingsStackNavigator';
+import BottomTabNavigatorExample from './BottomTabNavigatorExample';
 
 const Tab = createBottomTabNavigator();
 
@@ -55,6 +56,16 @@ const MainNavigator: React.FC<MainNavigatorProps> = ({onLogout}) => {
         }}
       />
       <Tab.Screen
+        name="Example"
+        component={BottomTabNavigatorExample}
+        options={{
+          tabBarLabel: 'Files',
+          tabBarIcon: ({color, size}) => (
+            <ExampleIcon color={color} size={size} />
+          ),
+        }}
+      />
+      <Tab.Screen
         name="Settings"
         options={{
           tabBarLabel: 'Cài Đặt',
@@ -62,7 +73,7 @@ const MainNavigator: React.FC<MainNavigatorProps> = ({onLogout}) => {
             <SettingsIcon color={color} size={size} />
           ),
         }}>
-        {() => <SettingsScreen onLogout={onLogout} />}
+        {() => <SettingsStackNavigator onLogout={onLogout} />}
       </Tab.Screen>
     </Tab.Navigator>
   );
@@ -79,6 +90,10 @@ const CalendarIcon = ({color, size}: {color: string; size: number}) => (
 
 const SettingsIcon = ({color, size}: {color: string; size: number}) => (
   <SettingsIconSvg color={color} size={size} />
+);
+
+const ExampleIcon = ({color, size}: {color: string; size: number}) => (
+  <ExampleIconSvg color={color} size={size} />
 );
 
 // Simple SVG-like components using Text (fallback)
@@ -117,6 +132,18 @@ const SettingsIconSvg = ({color, size}: {color: string; size: number}) => (
       alignItems: 'center',
     }}>
     <Text style={{color, fontSize: size * 0.8}}>⚙️</Text>
+  </View>
+);
+
+const ExampleIconSvg = ({color, size}: {color: string; size: number}) => (
+  <View
+    style={{
+      width: size,
+      height: size,
+      justifyContent: 'center',
+      alignItems: 'center',
+    }}>
+    <Text style={{color, fontSize: size * 0.8}}>📁</Text>
   </View>
 );
 

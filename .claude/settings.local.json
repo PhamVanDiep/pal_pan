@@ -4,7 +4,13 @@
       "Bash(bundle exec pod install:*)",
       "Bash(mkdir:*)",
       "Bash(npm install:*)",
-      "Bash(pod install)"
+      "Bash(pod install)",
+      "Bash(yarn:*)",
+      "Bash(rm:*)",
+      "Bash(./gradlew:*)",
+      "Bash(.gradlew.bat app:installDebug -PreactNativeDevServerPort=8081)",
+      "Bash(./gradlew.bat app:installDebug:*)",
+      "WebFetch(domain:react-native-documents.github.io)"
     ],
     "deny": [],
     "ask": []

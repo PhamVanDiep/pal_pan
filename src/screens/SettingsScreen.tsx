@@ -16,9 +16,10 @@ import {useToast} from '../context/ToastContext';
 
 interface SettingsScreenProps {
   onLogout: () => void;
+  navigation?: any;
 }
 
-const SettingsScreen: React.FC<SettingsScreenProps> = ({onLogout}) => {
+const SettingsScreen: React.FC<SettingsScreenProps> = ({onLogout, navigation}) => {
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [dailyReminder, setDailyReminder] = useState(false);
   const [username, setUsername] = useState('');
@@ -146,6 +147,12 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({onLogout}) => {
     setLogoutConfirmVisible(false);
   };
 
+  const navigateToDeviceInfo = () => {
+    if (navigation) {
+      navigation.navigate('DeviceInfo');
+    }
+  };
+
   const testNotification = async () => {
     if (!notificationsEnabled) {
       showError('Vui lòng bật thông báo trước');
@@ -253,6 +260,12 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({onLogout}) => {
             <Text style={styles.settingLabel}>Phiên bản</Text>
             <Text style={styles.settingValue}>1.0.0</Text>
           </View>
+          <TouchableOpacity
+            style={styles.settingItemTouchable}
+            onPress={navigateToDeviceInfo}>
+            <Text style={styles.settingLabel}>Thông tin thiết bị</Text>
+            <Text style={styles.arrowIcon}>›</Text>
+          </TouchableOpacity>
         </View>
 
         <TouchableOpacity
@@ -332,6 +345,21 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: '#F0F0F0',
+  },
+  settingItemTouchable: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0F0F0',
+    backgroundColor: '#FFF',
+  },
+  arrowIcon: {
+    fontSize: 24,
+    color: '#999',
+    fontWeight: '300',
   },
   settingLeft: {
     flex: 1,

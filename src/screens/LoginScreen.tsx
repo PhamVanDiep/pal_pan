@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -14,7 +14,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useLoading} from '../context/LoadingContext';
 import {useToast} from '../context/ToastContext';
-import BiometricLogin from '../components/BiometricLogin';
+import BiometricAuthService from '../services/BiometricAuth';
+import { BiometryTypes } from 'react-native-biometrics';
 
 const PRIMARY_COLOR = '#3B5998';
 
@@ -25,8 +26,70 @@ interface LoginScreenProps {
 const LoginScreen: React.FC<LoginScreenProps> = ({onLoginSuccess}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [biometricAvailable, setBiometricAvailable] = useState(false);
+  const [biometryType, setBiometryType] = useState<BiometryTypes | undefined>();
   const {showLoading, hideLoading} = useLoading();
   const {showError, showSuccess} = useToast();
+
+  useEffect(() => {
+    checkBiometricAvailability();
+  }, []);
+
+  const checkBiometricAvailability = async () => {
+    try {
+      const capabilities = await BiometricAuthService.isBiometricAvailable();
+      setBiometricAvailable(capabilities.available);
+      setBiometryType(capabilities.biometryType);
+    } catch (error) {
+      console.error('Error checking biometric availability:', error);
+    }
+  };
+
+  const getBiometricIcon = () => {
+    if (!biometricAvailable) return null;
+
+    // For iOS: Show face icon for FaceID, fingerprint for TouchID
+    if (Platform.OS === 'ios') {
+      if (biometryType === BiometryTypes.FaceID) {
+        return '👤'; // Face icon for iOS FaceID
+      } else if (biometryType === BiometryTypes.TouchID) {
+        return '👆'; // Fingerprint icon for iOS TouchID
+      }
+    }
+
+    // For Android: Always show fingerprint icon
+    if (Platform.OS === 'android') {
+      return '👆'; // Fingerprint icon for Android
+    }
+
+    return null;
+  };
+
+  const handleBiometricLogin = async () => {
+    if (!biometricAvailable) return;
+
+    showLoading('Đang xác thực...');
+    try {
+      const result = await BiometricAuthService.authenticate('Xác thực để đăng nhập');
+
+      if (result.success) {
+        await AsyncStorage.setItem('isLoggedIn', 'true');
+        await AsyncStorage.setItem('username', 'Admin User');
+        hideLoading();
+        showSuccess('Đăng nhập thành công bằng sinh trắc học!');
+
+        setTimeout(() => {
+          onLoginSuccess();
+        }, 500);
+      } else {
+        hideLoading();
+        showError(result.error || 'Xác thực không thành công');
+      }
+    } catch (error) {
+      hideLoading();
+      showError('Lỗi xác thực sinh trắc học');
+    }
+  };
 
   const handleLogin = async () => {
     if (!email.trim() || !password.trim()) {
@@ -67,27 +130,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({onLoginSuccess}) => {
   const handleSignUp = () => {
     // TODO: Implement sign up navigation
     console.log('Sign up pressed');
-  };
-
-  const handleBiometricSuccess = async () => {
-    showLoading('Đang đăng nhập...');
-    try {
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      await AsyncStorage.setItem('isLoggedIn', 'true');
-      await AsyncStorage.setItem('username', 'Admin User');
-      hideLoading();
-      showSuccess('Đăng nhập thành công bằng sinh trắc học!');
-
-      // Delay to show success toast
-      setTimeout(() => {
-        onLoginSuccess();
-      }, 500);
-    } catch (error) {
-      hideLoading();
-      showError('Không thể lưu thông tin đăng nhập');
-    }
   };
 
   return (
@@ -139,20 +181,19 @@ const LoginScreen: React.FC<LoginScreenProps> = ({onLoginSuccess}) => {
               <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-              <Text style={styles.loginButtonText}>Log In</Text>
-            </TouchableOpacity>
+            <View style={styles.loginButtonContainer}>
+              <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+                <Text style={styles.loginButtonText}>Log In</Text>
+              </TouchableOpacity>
 
-            <View style={styles.divider}>
-              <View style={styles.dividerLine} />
-              <Text style={styles.dividerText}>OR</Text>
-              <View style={styles.dividerLine} />
+              {biometricAvailable && (
+                <TouchableOpacity
+                  style={styles.biometricButton}
+                  onPress={handleBiometricLogin}>
+                  <Text style={styles.biometricIcon}>{getBiometricIcon()}</Text>
+                </TouchableOpacity>
+              )}
             </View>
-
-            <BiometricLogin
-              onSuccess={handleBiometricSuccess}
-              onError={(error) => showError(error)}
-            />
 
             <View style={styles.signUpContainer}>
               <Text style={styles.signUpText}>Don't have an account? </Text>
@@ -225,13 +266,19 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
   },
+  loginButtonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 24,
+  },
   loginButton: {
+    flex: 1,
     height: 50,
     backgroundColor: PRIMARY_COLOR,
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 24,
     shadowColor: PRIMARY_COLOR,
     shadowOffset: {
       width: 0,
@@ -246,20 +293,26 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-  divider: {
-    flexDirection: 'row',
+  biometricButton: {
+    width: 50,
+    height: 50,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 24,
+    borderWidth: 2,
+    borderColor: PRIMARY_COLOR,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: '#DDD',
-  },
-  dividerText: {
-    marginHorizontal: 16,
-    color: '#999',
-    fontSize: 14,
+  biometricIcon: {
+    fontSize: 24,
   },
   signUpContainer: {
     flexDirection: 'row',
