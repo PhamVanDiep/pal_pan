@@ -20,12 +20,12 @@
 
 ### Universal Links / App Links (https://)
 
-Replace `pal-pan://` with `https://pal-pan.app/` hoặc `https://www.pal-pan.app/`
+Replace `pal-pan://` with `https://pal-pan-app-links-vercel.vercel.app/`
 
 Ví dụ:
-- `https://pal-pan.app/home`
-- `https://pal-pan.app/files/pdf`
-- `https://pal-pan.app/settings/profile`
+- `https://pal-pan-app-links-vercel.vercel.app/home`
+- `https://pal-pan-app-links-vercel.vercel.app/files/pdf`
+- `https://pal-pan-app-links-vercel.vercel.app/settings/profile`
 
 ## Testing Deep Links
 
@@ -44,7 +44,7 @@ adb shell am start -W -a android.intent.action.VIEW -d "pal-pan://settings" com.
 adb shell am start -W -a android.intent.action.VIEW -d "pal-pan://settings/device-info" com.pal_pan
 
 # Test universal links
-adb shell am start -W -a android.intent.action.VIEW -d "https://pal-pan.app/home" com.pal_pan
+adb shell am start -W -a android.intent.action.VIEW -d "https://pal-pan-app-links-vercel.vercel.app/home" com.pal_pan
 ```
 
 #### Method 2: Browser/WebView
@@ -96,7 +96,7 @@ xcrun simctl boot "iPhone 15"
 xcrun simctl openurl booted "pal-pan://home"
 xcrun simctl openurl booted "pal-pan://calendar"
 xcrun simctl openurl booted "pal-pan://files/pdf"
-xcrun simctl openurl booted "https://pal-pan.app/settings"
+xcrun simctl openurl booted "https://pal-pan-app-links-vercel.vercel.app/settings"
 ```
 
 #### Method 3: Terminal (Physical Device)
@@ -141,8 +141,7 @@ Check Xcode console when opening deep links to see navigation events.
 ### Universal Links (iOS)
 
 1. Host `apple-app-site-association` file at:
-   - `https://pal-pan.app/.well-known/apple-app-site-association`
-   - `https://www.pal-pan.app/.well-known/apple-app-site-association`
+   - `https://pal-pan-app-links-vercel.vercel.app/.well-known/apple-app-site-association`
 
 Example file content:
 ```json
@@ -160,14 +159,12 @@ Example file content:
 ```
 
 2. Enable "Associated Domains" in Xcode:
-   - Add domain: `applinks:pal-pan.app`
-   - Add domain: `applinks:www.pal-pan.app`
+   - Add domain: `applinks:pal-pan-app-links-vercel.vercel.app`
 
 ### App Links (Android)
 
 1. Host `assetlinks.json` file at:
-   - `https://pal-pan.app/.well-known/assetlinks.json`
-   - `https://www.pal-pan.app/.well-known/assetlinks.json`
+   - `https://pal-pan-app-links-vercel.vercel.app/.well-known/assetlinks.json`
 
 Example file content:
 ```json

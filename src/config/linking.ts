@@ -12,10 +12,10 @@
  * - pal-pan://settings/device-info - Mở Device Info
  *
  * Universal Links (iOS) and App Links (Android):
- * - https://pal-pan.app/home
- * - https://pal-pan.app/calendar
- * - https://pal-pan.app/files
- * - https://pal-pan.app/settings
+ * - https://pal-pan-app-links-vercel.vercel.app/home
+ * - https://pal-pan-app-links-vercel.vercel.app/calendar
+ * - https://pal-pan-app-links-vercel.vercel.app/files
+ * - https://pal-pan-app-links-vercel.vercel.app/settings
  */
 
 import {LinkingOptions} from '@react-navigation/native';
@@ -23,39 +23,33 @@ import {LinkingOptions} from '@react-navigation/native';
 const linking: LinkingOptions<any> = {
   prefixes: [
     'pal-pan://',
-    'https://pal-pan.app',
-    'https://www.pal-pan.app',
+    'https://pal-pan-app-links-vercel.vercel.app',
   ],
   config: {
     screens: {
-      Login: 'login',
-      Main: {
+      Home: 'home',
+      Calendar: 'calendar',
+      Example: {
         screens: {
-          Home: 'home',
-          Calendar: 'calendar',
-          Example: {
+          PDFTab: {
             screens: {
-              PDFTab: {
-                screens: {
-                  PDFExample: 'files/pdf',
-                  PDFViewer: 'files/pdf/:pdfId',
-                },
-              },
-              ImageTab: {
-                screens: {
-                  ImageGallery: 'files/images',
-                  ImageViewer: 'files/images/:imageId',
-                },
-              },
+              PDFExample: 'files/pdf',
+              PDFViewer: 'files/pdf/:pdfId',
             },
           },
-          Settings: {
+          ImageTab: {
             screens: {
-              SettingsMain: 'settings',
-              Profile: 'settings/profile',
-              DeviceInfo: 'settings/device-info',
+              ImageGallery: 'files/images',
+              ImageViewer: 'files/images/:imageId',
             },
           },
+        },
+      },
+      Settings: {
+        screens: {
+          SettingsMain: 'settings',
+          Profile: 'settings/profile',
+          DeviceInfo: 'settings/device-info',
         },
       },
     },

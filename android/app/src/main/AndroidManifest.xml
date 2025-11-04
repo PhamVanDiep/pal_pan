@@ -49,10 +49,7 @@
             <category android:name="android.intent.category.BROWSABLE" />
             <data
                 android:scheme="https"
-                android:host="pal-pan.app" />
-            <data
-                android:scheme="https"
-                android:host="www.pal-pan.app" />
+                android:host="pal-pan-app-links-vercel.vercel.app" />
         </intent-filter>
       </activity>
     </application>

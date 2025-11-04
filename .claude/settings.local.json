@@ -10,7 +10,8 @@
       "Bash(./gradlew:*)",
       "Bash(.gradlew.bat app:installDebug -PreactNativeDevServerPort=8081)",
       "Bash(./gradlew.bat app:installDebug:*)",
-      "WebFetch(domain:react-native-documents.github.io)"
+      "WebFetch(domain:react-native-documents.github.io)",
+      "WebFetch(domain:pal-pan-app-links-vercel.vercel.app)"
     ],
     "deny": [],
     "ask": []
