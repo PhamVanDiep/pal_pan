@@ -13,6 +13,7 @@ import {LoadingProvider} from './src/context/LoadingContext';
 import {ToastProvider} from './src/context/ToastContext';
 import LoginScreen from './src/screens/LoginScreen';
 import MainNavigator from './src/navigation/MainNavigator';
+import linking from './src/config/linking';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -49,7 +50,7 @@ function App() {
     <SafeAreaProvider>
       <ToastProvider>
         <LoadingProvider>
-          <NavigationContainer>
+          <NavigationContainer linking={linking} fallback={null}>
             {isLoggedIn ? (
               <MainNavigator onLogout={handleLogout} />
             ) : (

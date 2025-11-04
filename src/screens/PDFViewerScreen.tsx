@@ -10,6 +10,7 @@ import {
   Alert,
 } from 'react-native';
 import Pdf from 'react-native-pdf';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useLoading} from '../context/LoadingContext';
 import {useToast} from '../context/ToastContext';
 import PDFService, {PDFDocument} from '../services/PDFService';
@@ -33,6 +34,8 @@ const PDFViewerScreen: React.FC<PDFViewerScreenProps> = ({
   const [isLoading, setIsLoading] = useState(true);
   const [downloadProgress, setDownloadProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [isChangingPage, setIsChangingPage] = useState(false);
+  const insets = useSafeAreaInsets();
   const {showLoading, hideLoading} = useLoading();
   const {showError, showSuccess} = useToast();
 
@@ -65,19 +68,24 @@ const PDFViewerScreen: React.FC<PDFViewerScreenProps> = ({
   };
 
   const goToPage = (page: number) => {
-    if (page >= 1 && page <= totalPages) {
+    if (page >= 1 && page <= totalPages && !isChangingPage) {
+      setIsChangingPage(true);
       setCurrentPage(page);
+      // Reset after animation completes
+      setTimeout(() => {
+        setIsChangingPage(false);
+      }, 300);
     }
   };
 
   const previousPage = () => {
-    if (currentPage > 1) {
+    if (currentPage > 1 && !isChangingPage) {
       goToPage(currentPage - 1);
     }
   };
 
   const nextPage = () => {
-    if (currentPage < totalPages) {
+    if (currentPage < totalPages && !isChangingPage) {
       goToPage(currentPage + 1);
     }
   };
@@ -89,7 +97,7 @@ const PDFViewerScreen: React.FC<PDFViewerScreenProps> = ({
   return (
     <View style={styles.container}>
       {/* Header with back button and page info */}
-      <View style={styles.header}>
+      <View style={[styles.header, {paddingTop: insets.top + 10}]}>
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => navigation.goBack()}>
@@ -160,14 +168,14 @@ const PDFViewerScreen: React.FC<PDFViewerScreenProps> = ({
               <TouchableOpacity
                 style={[
                   styles.controlButton,
-                  currentPage === 1 && styles.controlButtonDisabled,
+                  (currentPage === 1 || isChangingPage) && styles.controlButtonDisabled,
                 ]}
                 onPress={previousPage}
-                disabled={currentPage === 1}>
+                disabled={currentPage === 1 || isChangingPage}>
                 <Text
                   style={[
                     styles.controlButtonText,
-                    currentPage === 1 && styles.controlButtonTextDisabled,
+                    (currentPage === 1 || isChangingPage) && styles.controlButtonTextDisabled,
                   ]}>
                   ← Trước
                 </Text>
@@ -182,14 +190,14 @@ const PDFViewerScreen: React.FC<PDFViewerScreenProps> = ({
               <TouchableOpacity
                 style={[
                   styles.controlButton,
-                  currentPage === totalPages && styles.controlButtonDisabled,
+                  (currentPage === totalPages || isChangingPage) && styles.controlButtonDisabled,
                 ]}
                 onPress={nextPage}
-                disabled={currentPage === totalPages}>
+                disabled={currentPage === totalPages || isChangingPage}>
                 <Text
                   style={[
                     styles.controlButtonText,
-                    currentPage === totalPages &&
+                    (currentPage === totalPages || isChangingPage) &&
                       styles.controlButtonTextDisabled,
                   ]}>
                   Sau →
@@ -213,7 +221,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: '#3B5998',
-    paddingTop: Platform.OS === 'ios' ? 50 : 20,
     paddingBottom: 15,
     paddingHorizontal: 16,
   },

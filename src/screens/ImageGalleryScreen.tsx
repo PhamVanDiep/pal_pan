@@ -10,6 +10,7 @@ import {
   Alert,
   Dimensions,
 } from 'react-native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {launchImageLibrary, launchCamera} from 'react-native-image-picker';
 import ImageService, {ImageItem} from '../services/ImageService';
 import {useLoading} from '../context/LoadingContext';
@@ -28,6 +29,7 @@ const ImageGalleryScreen: React.FC<ImageGalleryScreenProps> = ({
   const [images, setImages] = useState<ImageItem[]>([]);
   const [selectedImages, setSelectedImages] = useState<Set<string>>(new Set());
   const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const insets = useSafeAreaInsets();
   const {showLoading, hideLoading} = useLoading();
   const {showSuccess, showError} = useToast();
 
@@ -288,7 +290,7 @@ const ImageGalleryScreen: React.FC<ImageGalleryScreenProps> = ({
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, {paddingTop: insets.top + 10}]}>
         {isSelectionMode && (
           <TouchableOpacity
             style={styles.backButton}
@@ -349,7 +351,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: '#3B5998',
-    paddingTop: Platform.OS === 'ios' ? 50 : 20,
     paddingBottom: 15,
     paddingHorizontal: 16,
   },

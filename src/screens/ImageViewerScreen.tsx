@@ -10,6 +10,7 @@ import {
   Platform,
   Alert,
 } from 'react-native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import ImageService, {ImageItem} from '../services/ImageService';
 import {useLoading} from '../context/LoadingContext';
 import {useToast} from '../context/ToastContext';
@@ -30,6 +31,7 @@ const ImageViewerScreen: React.FC<ImageViewerScreenProps> = ({
   const initialIndex = images.findIndex((img: ImageItem) => img.id === imageId);
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const flatListRef = useRef<FlatList>(null);
+  const insets = useSafeAreaInsets();
   const {showLoading, hideLoading} = useLoading();
   const {showSuccess, showError} = useToast();
 
@@ -110,7 +112,7 @@ const ImageViewerScreen: React.FC<ImageViewerScreenProps> = ({
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, {paddingTop: insets.top + 10}]}>
         <TouchableOpacity
           style={styles.headerButton}
           onPress={() => navigation.goBack()}>
@@ -186,7 +188,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: 'rgba(0, 0, 0, 0.8)',
-    paddingTop: Platform.OS === 'ios' ? 50 : 20,
     paddingBottom: 15,
     paddingHorizontal: 16,
   },

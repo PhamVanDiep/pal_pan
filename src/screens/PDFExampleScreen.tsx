@@ -10,6 +10,7 @@ import {
   Modal,
   TextInput,
 } from 'react-native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import PDFService, {PDFDocument} from '../services/PDFService';
 import DocumentPicker from '../services/DocumentPicker';
 import {useLoading} from '../context/LoadingContext';
@@ -25,6 +26,7 @@ const PDFExampleScreen: React.FC<PDFExampleScreenProps> = ({navigation}) => {
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
   const [pdfUrl, setPdfUrl] = useState('');
   const [pdfTitle, setPdfTitle] = useState('');
+  const insets = useSafeAreaInsets();
   const {showLoading, hideLoading} = useLoading();
   const {showSuccess, showError} = useToast();
 
@@ -353,7 +355,7 @@ const PDFExampleScreen: React.FC<PDFExampleScreenProps> = ({navigation}) => {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, {paddingTop: insets.top + 10}]}>
         <Text style={styles.title}>📄 PDF Manager</Text>
       </View>
 
@@ -514,7 +516,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#3B5998',
-    paddingTop: Platform.OS === 'ios' ? 50 : 20,
     paddingBottom: 15,
     paddingHorizontal: 16,
   },

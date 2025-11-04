@@ -3,15 +3,17 @@ package com.pal_pan
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import androidx.activity.result.ActivityResultLauncher
 import com.facebook.react.bridge.*
-import com.facebook.react.modules.core.DeviceEventManagerModule
 
 class DocumentPickerModule(reactContext: ReactApplicationContext) :
-    ReactContextBaseJavaModule(reactContext) {
+    ReactContextBaseJavaModule(reactContext), ActivityEventListener {
 
     override fun getName(): String {
         return "DocumentPickerModule"
+    }
+
+    init {
+        reactContext.addActivityEventListener(this)
     }
 
     private var pickFilePromise: Promise? = null
@@ -40,7 +42,7 @@ class DocumentPickerModule(reactContext: ReactApplicationContext) :
         }
     }
 
-    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == PICK_PDF_REQUEST && pickFilePromise != null) {
             if (resultCode == Activity.RESULT_OK) {
                 data?.data?.let { uri ->
@@ -56,6 +58,10 @@ class DocumentPickerModule(reactContext: ReactApplicationContext) :
             }
             pickFilePromise = null
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        // Not needed
     }
 
     private fun getFileInfo(uri: Uri): WritableMap {

@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Platform,
 } from 'react-native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import DeviceInfoService, {DeviceInformation} from '../services/DeviceInfo';
 import {useLoading} from '../context/LoadingContext';
 import {useToast} from '../context/ToastContext';
@@ -19,6 +20,7 @@ interface DeviceInfoScreenProps {
 const DeviceInfoScreen: React.FC<DeviceInfoScreenProps> = ({navigation}) => {
   const [deviceInfo, setDeviceInfo] = useState<DeviceInformation | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const insets = useSafeAreaInsets();
   const {showLoading, hideLoading} = useLoading();
   const {showError} = useToast();
 
@@ -71,7 +73,7 @@ const DeviceInfoScreen: React.FC<DeviceInfoScreenProps> = ({navigation}) => {
   return (
     <View style={styles.container}>
       {/* Custom Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, {paddingTop: insets.top + 10}]}>
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => navigation.goBack()}>
@@ -177,7 +179,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: '#3B5998',
-    paddingTop: Platform.OS === 'ios' ? 50 : 20,
     paddingBottom: 15,
     paddingHorizontal: 16,
   },

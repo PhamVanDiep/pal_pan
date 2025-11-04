@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pal Pan Deep Link Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1 {
+            color: #3B5998;
+            text-align: center;
+        }
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #333;
+            margin-top: 0;
+            border-bottom: 2px solid #3B5998;
+            padding-bottom: 10px;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            margin: 10px 0;
+        }
+        a {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #3B5998;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: background 0.3s;
+            width: 100%;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        a:hover {
+            background: #2d4373;
+        }
+        .scheme-type {
+            display: inline-block;
+            background: #e8f0fe;
+            color: #3B5998;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        .note {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 12px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 12px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔗 Pal Pan Deep Link Test Page</h1>
+
+    <div class="success">
+        <strong>✅ Hướng dẫn:</strong> Click vào các link bên dưới để test deep linking.
+        App Pal Pan phải được cài đặt trên thiết bị của bạn.
+    </div>
+
+    <div class="section">
+        <h2>Main Navigation</h2>
+        <ul>
+            <li>
+                <span class="scheme-type">pal-pan://</span>
+                <a href="pal-pan://home">🏠 Home - Công Việc</a>
+            </li>
+            <li>
+                <span class="scheme-type">pal-pan://</span>
+                <a href="pal-pan://calendar">📅 Calendar - Lịch</a>
+            </li>
+            <li>
+                <span class="scheme-type">pal-pan://</span>
+                <a href="pal-pan://settings">⚙️ Settings - Cài Đặt</a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Files Section</h2>
+        <ul>
+            <li>
+                <span class="scheme-type">pal-pan://</span>
+                <a href="pal-pan://files/pdf">📄 PDF Manager</a>
+            </li>
+            <li>
+                <span class="scheme-type">pal-pan://</span>
+                <a href="pal-pan://files/images">🖼️ Image Gallery</a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Settings Section</h2>
+        <ul>
+            <li>
+                <span class="scheme-type">pal-pan://</span>
+                <a href="pal-pan://settings/profile">👤 Profile</a>
+            </li>
+            <li>
+                <span class="scheme-type">pal-pan://</span>
+                <a href="pal-pan://settings/device-info">📱 Device Info</a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Universal Links (HTTPS)</h2>
+        <ul>
+            <li>
+                <span class="scheme-type">https://</span>
+                <a href="https://pal-pan.app/home">🏠 Home (Universal Link)</a>
+            </li>
+            <li>
+                <span class="scheme-type">https://</span>
+                <a href="https://pal-pan.app/calendar">📅 Calendar (Universal Link)</a>
+            </li>
+            <li>
+                <span class="scheme-type">https://</span>
+                <a href="https://pal-pan.app/files/pdf">📄 PDF Manager (Universal Link)</a>
+            </li>
+            <li>
+                <span class="scheme-type">https://</span>
+                <a href="https://pal-pan.app/settings">⚙️ Settings (Universal Link)</a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="note">
+        <strong>⚠️ Lưu ý:</strong>
+        <ul style="margin-top: 10px; padding-left: 20px;">
+            <li>Universal Links (https://) chỉ hoạt động khi domain được config chính xác</li>
+            <li>Custom scheme (pal-pan://) hoạt động ngay lập tức</li>
+            <li>Bạn phải đăng nhập trước khi có thể navigate đến các screen</li>
+            <li>Trên Android: Có thể cần rebuild app sau khi thêm deep links</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>ADB Commands (Android)</h2>
+        <p>Copy và paste vào terminal để test:</p>
+        <pre style="background: #f5f5f5; padding: 12px; border-radius: 8px; overflow-x: auto;">
+# Open Home
+adb shell am start -W -a android.intent.action.VIEW -d "pal-pan://home" com.pal_pan
+
+# Open Calendar
+adb shell am start -W -a android.intent.action.VIEW -d "pal-pan://calendar" com.pal_pan
+
+# Open PDF Manager
+adb shell am start -W -a android.intent.action.VIEW -d "pal-pan://files/pdf" com.pal_pan
+
+# Open Image Gallery
+adb shell am start -W -a android.intent.action.VIEW -d "pal-pan://files/images" com.pal_pan
+
+# Open Settings
+adb shell am start -W -a android.intent.action.VIEW -d "pal-pan://settings" com.pal_pan
+
+# Open Device Info
+adb shell am start -W -a android.intent.action.VIEW -d "pal-pan://settings/device-info" com.pal_pan
+        </pre>
+    </div>
+
+    <div class="section">
+        <h2>How to Use This Test Page</h2>
+        <ol>
+            <li><strong>Trên Emulator/Device:</strong>
+                <ul style="padding-left: 20px;">
+                    <li>Push file này lên device: <code>adb push deep-link-test.html /sdcard/Download/</code></li>
+                    <li>Mở file bằng Chrome hoặc browser khác</li>
+                    <li>Click vào các links để test</li>
+                </ul>
+            </li>
+            <li><strong>Trên Web Server:</strong>
+                <ul style="padding-left: 20px;">
+                    <li>Host file này trên web server</li>
+                    <li>Truy cập từ thiết bị mobile</li>
+                    <li>Click vào các links</li>
+                </ul>
+            </li>
+        </ol>
+    </div>
+
+    <footer style="text-align: center; margin-top: 40px; color: #999; font-size: 14px;">
+        <p>Pal Pan App - Deep Link Testing Tool</p>
+        <p>Version 1.0</p>
+    </footer>
+</body>
+</html>
