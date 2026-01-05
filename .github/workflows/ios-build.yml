@@ -2,10 +2,10 @@ name: iOS Build
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, master ]
   pull_request:
-    branches: [ main ]
-  workflow_dispatch: # Allows manual trigger
+    branches: [ main, master ]
+  workflow_dispatch:
 
 jobs:
   build-ios:
@@ -15,32 +15,115 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
     
-    - name: Set up Node.js
+    - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '18'
+        node-version: '22'
         cache: 'npm'
     
-    - name: Install dependencies
-      run: npm install
+    - name: Install npm dependencies
+      run: npm ci
+    
+    - name: Check ios folder structure
+      run: |
+        echo "=== Current directory structure ==="
+        ls -la
+        if [ -d "ios" ]; then
+          echo "=== iOS folder exists ==="
+          ls -la ios/
+        else
+          echo "=== iOS folder does not exist ==="
+        fi
     
     - name: Install CocoaPods
       run: |
+        sudo gem install cocoapods
+    
+    - name: Install iOS dependencies (Pods)
+      run: |
         cd ios
-        pod install
+        pod install --repo-update
+    
+    - name: List workspace and schemes
+      run: |
+        cd ios
+        echo "=== Files in ios folder ==="
+        ls -la
+        
+        echo "=== Available workspaces and projects ==="
+        find . -name "*.xcworkspace" -o -name "*.xcodeproj"
+        
+        # Find workspace or project file
+        WORKSPACE=$(find . -name "*.xcworkspace" -maxdepth 1 | head -n 1)
+        PROJECT=$(find . -name "*.xcodeproj" -maxdepth 1 | head -n 1)
+        
+        if [ ! -z "$WORKSPACE" ]; then
+          echo "=== Using workspace: $WORKSPACE ==="
+          xcodebuild -list -workspace "$WORKSPACE"
+        elif [ ! -z "$PROJECT" ]; then
+          echo "=== Using project: $PROJECT ==="
+          xcodebuild -list -project "$PROJECT"
+        fi
     
     - name: Build iOS app
       run: |
         cd ios
-        xcodebuild -workspace PalPan.xcworkspace \
-          -scheme PalPan \
-          -configuration Release \
-          -sdk iphoneos \
-          -archivePath $PWD/build/PalPan.xcarchive \
-          archive
+        
+        # Tự động tìm workspace hoặc project
+        WORKSPACE=$(find . -name "*.xcworkspace" -maxdepth 1 | head -n 1)
+        PROJECT=$(find . -name "*.xcodeproj" -maxdepth 1 | head -n 1)
+        
+        # Tự động tìm scheme
+        if [ ! -z "$WORKSPACE" ]; then
+          SCHEME=$(xcodebuild -list -workspace "$WORKSPACE" 2>/dev/null | grep -A 100 "Schemes:" | grep -v "Schemes:" | head -n 1 | xargs)
+          
+          echo "Building with workspace: $WORKSPACE"
+          echo "Using scheme: $SCHEME"
+          
+          xcodebuild clean archive \
+            -workspace "$WORKSPACE" \
+            -scheme "$SCHEME" \
+            -configuration Release \
+            -sdk iphoneos \
+            -archivePath "$PWD/build/App.xcarchive" \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+            
+        elif [ ! -z "$PROJECT" ]; then
+          SCHEME=$(xcodebuild -list -project "$PROJECT" 2>/dev/null | grep -A 100 "Schemes:" | grep -v "Schemes:" | head -n 1 | xargs)
+          
+          echo "Building with project: $PROJECT"
+          echo "Using scheme: $SCHEME"
+          
+          xcodebuild clean archive \
+            -project "$PROJECT" \
+            -scheme "$SCHEME" \
+            -configuration Release \
+            -sdk iphoneos \
+            -archivePath "$PWD/build/App.xcarchive" \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+        else
+          echo "Error: No workspace or project file found!"
+          exit 1
+        fi
     
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
+      if: success()
       with:
         name: ios-build
-        path: ios/build/PalPan.xcarchive
+        path: ios/build/App.xcarchive
+        retention-days: 7
+    
+    - name: Upload build logs on failure
+      uses: actions/upload-artifact@v4
+      if: failure()
+      with:
+        name: build-logs
+        path: |
+          ~/Library/Logs/DiagnosticReports/
+          ios/build/
+        retention-days: 3
