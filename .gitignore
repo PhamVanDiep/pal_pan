@@ -80,3 +80,4 @@ package-lock.json
 # Gradle
 android/gradle.properties
 android/app/my-release-key.keystore
+yarn.lock
